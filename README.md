@@ -14,9 +14,10 @@ Descargas en **[Releases](https://github.com/racarla96/ProtoLAB_USB_Communicatio
 | `protolink-X.Y.Z-py3-none-<plataforma>.whl` | Paquete de Python (`pip install` y listo) |
 | `protolink-matlab-X.Y.Z-<sistema>-<release de MATLAB>.zip` | **MATLAB + Simulink listos**: bloque ya compilado, librería con máscara de desplegables, `Link.m`. Descomprimir y ejecutar `protolink_setup` |
 | `protolink_fw.uf2` | Firmware para Raspberry Pi Pico (arrastrar a la unidad RPI-RP2) |
+| `protolink_fw_esp32.bin` | Firmware para ESP32 clásico (se graba en `0x0`; ver la guía de ESP32) |
 | `SHA256SUMS.txt` | Comprobación de integridad (`sha256sum -c SHA256SUMS.txt`) |
 
-Los firmwares de Pico 2, ESP32, Arduino UNO y LGT8F328P se publicarán cuando se prueben en hardware.
+Los firmwares de Pico 2, Arduino UNO y LGT8F328P se publicarán cuando se prueben en hardware.
 
 ## Guías
 
@@ -70,7 +71,7 @@ Placas: **Pico** = Raspberry Pi Pico (RP2040), **Pico 2** = RP2350, **ESP32** = 
 |-------|:-----:|:-------:|:-----:|
 | Pico      | ✅ | 🔨 | 🧪 |
 | Pico 2    | ❔ | ❔ | ❔ |
-| ESP32     | ❔ | ❔ | ❔ |
+| ESP32     | ✅ | ❔ | ❔ |
 | UNO       | ❔ | ❔ | ❔ |
 | LGT8F328P | ❔ | ❔ | ❔ |
 
@@ -80,7 +81,7 @@ Placas: **Pico** = Raspberry Pi Pico (RP2040), **Pico 2** = RP2350, **ESP32** = 
 |-------|:-----:|:-------:|:-----:|
 | Pico      | ✅ | 🔨 | 🧪 |
 | Pico 2    | ❔ | ❔ | ❔ |
-| ESP32     | ❔ | ❔ | ❔ |
+| ESP32     | ✅ | ❔ | ❔ |
 | UNO       | ❔ | ❔ | ❔ |
 | LGT8F328P | ❔ | ❔ | ❔ |
 
@@ -90,7 +91,7 @@ Placas: **Pico** = Raspberry Pi Pico (RP2040), **Pico 2** = RP2350, **ESP32** = 
 |-------|:-----:|:-------:|:-----:|
 | Pico      | ✅ | ❔ | ❔ |
 | Pico 2    | ❔ | ❔ | ❔ |
-| ESP32     | ❔ | ❔ | ❔ |
+| ESP32     | ✅ | ❔ | ❔ |
 | UNO       | ❔ | ❔ | ❔ |
 | LGT8F328P | ❔ | ❔ | ❔ |
 
@@ -100,11 +101,11 @@ Placas: **Pico** = Raspberry Pi Pico (RP2040), **Pico 2** = RP2350, **ESP32** = 
 |-------|:-----:|:-------:|:-----:|
 | Pico      | ✅ | 🔨 | 🔨 |
 | Pico 2    | ❔ | ❔ | ❔ |
-| ESP32     | ❔ | ❔ | ❔ |
+| ESP32     | ✅ | ❔ | ❔ |
 | UNO       | ❔ | ❔ | ❔ |
 | LGT8F328P | ❔ | ❔ | ❔ |
 
 Notas: en Windows el puerto serie (E/S solapada) y en macOS la velocidad de puerto solo se han probado hasta
 donde llega el CI; el bloque de Simulink se compila para los tres sistemas en CI con MATLAB, pero solo se ha
-ejecutado en Linux. El firmware de Pico 2, ESP32, UNO y LGT8F328P compila en CI; su lógica común está probada
-en el PC contra una placa simulada, pero ninguna de esas placas se ha probado todavía.
+ejecutado en Linux. El firmware de Pico 2, UNO y LGT8F328P compila en CI; su lógica común está probada
+en el PC contra una placa simulada, pero esas placas no se han probado todavía.

@@ -5,8 +5,8 @@ cuyo USB es un chip puente **CP210x o CH340** conectado al UART0. Todo viene pre
 instalar ESP-IDF ni compilar nada. Los pasos son para **Windows**; en Linux/macOS cambia solo el nombre del
 puerto (ver al final).
 
-> **Estado:** el firmware compila en CI (ESP-IDF 5.5.5) y su lógica está probada en el PC contra una placa
-> simulada, pero **aún no se ha probado en un ESP32 real**.
+> **Estado:** probado en un ESP32-D0WD-V3 (placa con CH340) en Linux: Python, C/C++, MATLAB y Simulink, de 100 a
+> 1000 Hz sin pérdidas. Windows y macOS: sin probar con una placa.
 
 ## Diferencias con la Pico
 
