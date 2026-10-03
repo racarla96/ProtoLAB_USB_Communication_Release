@@ -1,0 +1,82 @@
+name: MATLAB packages
+
+# Compiles the Simulink block (sfun_protolink) for each OS from the library archive
+# that the private source repo attached to a release, and adds
+#   protolink-matlab-<version>-<arch>-<matlab release>.zip
+# to the same release (plus a refreshed SHA256SUMS.txt). Started by the source repo's
+# release workflow, or by hand: Actions -> MATLAB packages -> Run workflow (tag: v1.2.0).
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag that already has the protolink-X.Y.Z-<os> archives (e.g. v1.2.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: MATLAB package (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: linux,   os: ubuntu-22.04,  pattern: "protolink-*-linux-x86_64.tar.gz" }
+          - { name: macos,   os: macos-latest,  pattern: "protolink-*-macos-universal.tar.gz" }
+          - { name: windows, os: windows-latest, pattern: "protolink-*-windows-x64.zip" }
+    steps:
+      - name: Download the library archive of the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern "${{ matrix.pattern }}" --dir archive
+          cd archive
+          for f in *.tar.gz; do [ -e "$f" ] && tar xzf "$f"; done
+          for f in *.zip; do [ -e "$f" ] && unzip -q "$f"; done
+          ls
+
+      - uses: matlab-actions/setup-matlab@f9e43010f1ae678f7cfa0542fe2a4f60f7d1ad8d # v3.1.0
+        with:
+          products: Simulink
+
+      - name: Build the block and package it
+        uses: matlab-actions/run-command@bfa857648f4895aa98a446fe41c85e0788421ed5 # v3.3.0
+        env:
+          TAG: ${{ inputs.tag }}
+        with:
+          command: |
+            d = dir('archive/protolink-*');
+            d = d([d.isdir]);
+            root = fullfile(d(1).folder, d(1).name);
+            addpath(fullfile(root, 'tools'));
+            matlab_package(erase(getenv('TAG'), 'v'), fullfile(pwd, 'out'));
+
+      - name: Attach the zip to the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: gh release upload "$TAG" out/*.zip --repo "$GITHUB_REPOSITORY" --clobber
+
+  checksums:
+    name: Refresh SHA256SUMS.txt
+    needs: package
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          mkdir dl && cd dl
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern '*' --skip-existing || true
+          rm -f SHA256SUMS.txt
+          sha256sum -- * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          gh release upload "$TAG" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber
