@@ -13,6 +13,7 @@ Descargas en **[Releases](https://github.com/racarla96/ProtoLAB_USB_Communicatio
 | `protolink-X.Y.Z-linux-x86_64.tar.gz`, `-macos-universal.tar.gz`, `-windows-x64.zip` | Librería (C/C++), bindings de C++, Python, MATLAB y Simulink, ejemplos y guías |
 | `protolink-X.Y.Z-py3-none-<plataforma>.whl` | Paquete de Python (`pip install` y listo) |
 | `protolink-matlab-X.Y.Z-<sistema>-<release de MATLAB>.zip` | **MATLAB + Simulink listos**: bloque ya compilado, librería con máscara de desplegables, `Link.m`. Descomprimir y ejecutar `protolink_setup` |
+| `protolink-device-sdk.zip` | **Tu código en el micro**: librería precompilada (RP2040, RP2350, ESP32) y plantillas de Pico y ESP32 donde solo escribes `pl_app_process()` ([guía](docs/DeviceSDK.md)) |
 | `protolink_fw.uf2` | Firmware para Raspberry Pi Pico (arrastrar a la unidad RPI-RP2) |
 | `protolink_fw_esp32.bin` | Firmware para ESP32 clásico (se graba en `0x0`; ver la guía de ESP32) |
 | `SHA256SUMS.txt` | Comprobación de integridad (`sha256sum -c SHA256SUMS.txt`) |
@@ -24,7 +25,7 @@ Los firmwares de Pico 2, Arduino UNO y LGT8F328P se publicarán cuando se pruebe
 En [`docs/`](docs/): guías rápidas
 [Linux](docs/QuickStartGuide_Linux.md) · [Windows](docs/QuickStartGuide_Windows.md) ·
 [macOS](docs/QuickStartGuide_macOS.md) · [ESP32](docs/QuickStartGuide_ESP32.md) ·
-[Arduino UNO / LGT8F328P](docs/QuickStartGuide_ArduinoUNO.md), y [Simulink](docs/SIMULINK.md)
+[Arduino UNO / LGT8F328P](docs/QuickStartGuide_ArduinoUNO.md), [tu código en el micro](docs/DeviceSDK.md), y [Simulink](docs/SIMULINK.md)
 (bloque con máscara de desplegables, instalación y parámetros).
 
 ## Uso
