@@ -14,17 +14,29 @@ protolink-device-sdk/
 
 ## Qué escribes tú
 
-Una sola función, en `app.c` de la plantilla, que se llama una vez por trama (100 Hz tras encender;
-el PC puede pedir hasta 1000 Hz):
+Dos cosas, en `app.c` de la plantilla:
 
 ```c
 #include "protolink_device.h"
 
-void pl_app_process(const float in[PROTOLINK_N_VALUES], float out[PROTOLINK_N_VALUES]) {
-    /* in  = los 9 valores que mandó el PC
-       out = los 9 valores que se le devuelven */
+/* Cuántos valores recibe y cuántos manda la placa en cada trama (los fija tu firmware). */
+const unsigned protolink_channels_from_pc = 3;   /* el PC manda 3 valores            */
+const unsigned protolink_channels_to_pc = 12;    /* la placa le devuelve 12 valores  */
+
+/* Se llama una vez por trama (100 Hz tras encender; el PC puede pedir hasta 1000 Hz). */
+void pl_app_process(const float *in, int n_in, float *out, int n_out) {
+    /* in  = los n_in valores que mandó el PC (los que no mandó valen 0)
+       out = los n_out valores que se le devuelven */
 }
 ```
+
+**Canales.** El número de canales de cada sentido lo decide la placa, hasta 64 por sentido. El PC los lee
+al conectar (`link.channels`, `link.query()`), así que Python, C++, MATLAB y Simulink se adaptan sin tocar nada;
+en Simulink, el botón *Read from board* de la máscara los copia al bloque. Cada canal cuesta 4 bytes por trama:
+con muchos canales a alta frecuencia hace falta un enlace rápido. En la Pico (USB) no es un problema; en las
+placas con UART (ESP32 a 921600 baudios, Arduino) la placa calcula el máximo que cabe (el 90 % del enlace) y lo
+anuncia al PC: p. ej. con 20 canales el ESP32 admite hasta 901 Hz y rechaza más con un mensaje claro.
+
 La plantilla trae un filtro paso bajo como ejemplo. Lo demás (frecuencia pedida por el PC, confirmaciones,
 descarte de tramas sin bloquear nunca) lo hace la librería.
 
@@ -51,4 +63,4 @@ No pongas `CONFIG_ESP_CONSOLE_NONE` en tu `sdkconfig`: la placa dejaría de tran
 ## Desde el PC no cambia nada
 
 El PC usa la misma librería y los mismos ejemplos (Python, C++, MATLAB, Simulink) con tu firmware o con los
-de ejemplo; solo cambia lo que devuelve `pl_app_process`.
+de ejemplo; solo cambia lo que devuelve `pl_app_process` y el número de canales.

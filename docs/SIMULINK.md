@@ -45,6 +45,7 @@ Doble clic y se rellena todo con desplegables:
 |-------|--------|
 | **Board** | Pico / Pico 2, ESP32 (WROOM), Arduino UNO, LGT8F328P o *Custom*. Fija la velocidad del puerto, el manejo de DTR/RTS, la espera tras abrir (el UNO y el LGT8F328P se resetean) y la frecuencia máxima de la placa |
 | **Port** | Desplegable con los puertos serie conectados ahora al PC; **Refresh port list** lo actualiza al enchufar o quitar una placa. *(other)* permite escribir uno a mano |
+| **Channels to board / from board** | Ancho de la entrada y de la salida del bloque; los fija el firmware de la placa. El botón **Read from board** abre la placa (con la configuración del bloque) y los rellena; con el firmware de pruebas son 9 y 9 |
 | **Rate (Hz)** | 10, 50, 100, 200, 250, 500, 1000 o *Custom* (cualquier entero; se rechaza si supera lo que admite la placa) |
 | **Read mode** | *Latest value* (la última trama, nunca espera) o *Every frame (FIFO)* (todas, en orden) |
 | **FIFO timeout** | espera máxima en modo FIFO |
@@ -60,7 +61,7 @@ Los parámetros reales de la S-function (tabla de abajo) los calcula la máscara
 `sfun_protolink` y *S-function parameters*:
 
 ```
-'COM5', 500, 1/500, 1, 100, 1, 115200, 1, 0
+'COM5', 500, 1/500, 1, 100, 1, 115200, 1, 0, 9, 9
 ```
 
 | # | Parámetro | Significado |
@@ -74,10 +75,15 @@ Los parámetros reales de la S-function (tabla de abajo) los calcula la máscara
 | 7 | `BAUD` | velocidad del puerto: `115200` para la Pico, `921600` para el firmware del ESP32 |
 | 8 | `DTR_RTS` | `1` para la Pico; `0` para placas ESP32 (no tocar las líneas que resetean la placa) |
 | 9 | `BOOT_MS` | espera en ms tras abrir el puerto, antes del primer `start`: `0` para Pico y ESP32, `2500` para Arduino UNO y LGT8F328P (se resetean al abrir) |
+| 10 | `N_TO` | canales hacia la placa = ancho de la entrada del bloque (1..64) |
+| 11 | `N_FROM` | canales desde la placa = ancho de la salida 1 (1..64) |
 
-Entrada: vector de 9 valores que se envía a la Pico en cada paso (después de calcular las salidas,
+`N_TO` y `N_FROM` los fija el firmware de la placa (9 y 9 en el firmware de pruebas). Al arrancar, el bloque le
+pregunta a la placa y se detiene con un mensaje claro si no coinciden con lo configurado.
+
+Entrada: vector de `N_TO` valores que se envía a la placa en cada paso (después de calcular las salidas,
 así que el bloque no tiene paso directo y no crea bucles algebraicos).
-Salidas: (1) 9 valores de la última trama, (2) `seq`, (3) `timestamp_us` de la Pico, (4) `new` (1 si
+Salidas: (1) `N_FROM` valores de la última trama, (2) `seq`, (3) `timestamp_us` de la Pico, (4) `new` (1 si
 llegó trama en este paso), (5) tramas pendientes en la cola de recepción.
 
 Configura el modelo con *Solver* `FixedStepDiscrete` y *Fixed-step size* = `TS`.
