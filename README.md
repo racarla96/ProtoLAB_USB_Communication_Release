@@ -1,4 +1,4 @@
-# protolink
+# ProtoLink
 
 Enlace USB de datos en tiempo real entre un **PC** (Windows, Linux o macOS) y una placa **Raspberry Pi Pico,
 ESP32, Arduino UNO o LGT8F328P**: el PC y la placa se intercambian valores `float32` (9 en cada sentido en el firmware de pruebas, hasta 64 por sentido,
