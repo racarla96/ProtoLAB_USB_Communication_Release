@@ -4,18 +4,13 @@ protolink en un **Arduino UNO (ATmega328P)**. Es el hermano pequeño de la Pico:
 pero con **menos frecuencia máxima** porque el UNO tiene 16 MHz de CPU de 8 bits, 2 KB de RAM y un puerto
 serie (UART) como único enlace con el PC.
 
-> **Estado:** el firmware compila en CI (arduino-cli, núcleo `arduino:avr`) y ocupa 4 KB de flash y 352 B de
-> RAM, y la lógica común está probada en el PC contra una placa simulada, pero **aún no se ha probado en un UNO real**.
-> Los 500 Hz de máximo son una estimación por ancho de banda; la prueba con la placa decide el límite real.
+> **Estado:** el device SDK del UNO se construye y compila en CI (4–6 KB de flash, ~500 B de RAM) y la lógica común
+> está probada en el PC contra una placa simulada, pero **aún no se ha probado en un UNO real**. Los 500 Hz de máximo
+> son una estimación por ancho de banda; la prueba con la placa decide el límite real.
 
-> **LGT8F328P** (clon de ATmega328P a 32 MHz, p. ej. las placas «LGT8F328P-LQFP32 mini EVB» con CH340):
-> es **el mismo sketch** compilado para otra placa; al ir al doble de reloj sube a **1 Mbaudio y 1–1000 Hz**
-> (`firmware/arduino/pl_board_config.h` elige según `F_CPU`). Diferencias respecto al UNO: núcleo
-> `lgt8fx:avr:328` (URL del gestor de placas
-> `https://raw.githubusercontent.com/dbuezas/lgt8fx/master/package_lgt8fx_index.json`, v2.0.7), reloj *Internal 32MHz*,
-> abrir en el PC con `baud=protolink.LGT8F_BAUD` (1000000) y `hw_suite.py <puerto> --board lgt8f`; el artefacto del CI
-> es `protolink_fw_lgt8f328p.hex` (se graba con el IDE o con avrdude/el programador que uses con esa placa).
-> **Sin probar en hardware** (compila en CI; 4272 B de flash, 352 B de RAM).
+> **LGT8F328P** (clon de ATmega328P a 32 MHz): **no tiene device SDK por ahora**, porque su núcleo de Arduino
+> (`lgt8fx`) no admite librerías precompiladas. En el PC funciona igual que el UNO, pero a 1000000 baudios y hasta
+> 1000 Hz (`baud=protolink.LGT8F_BAUD`).
 
 ## Qué cambia respecto a la Pico
 
@@ -35,25 +30,24 @@ Por qué 500 Hz: a 500000 baudios la línea da para ~1000 tramas/s en cada senti
 
 De la página [Releases](https://github.com/racarla96/ProtoLAB_USB_Communication_Release/releases/latest):
 
-- `protolink_fw_uno.hex` — firmware listo para grabar en el UNO
-- `protolink_fw_lgt8f328p.hex` — el mismo para el LGT8F328P
-- `protolink_uno_sketch.zip` — la misma cosa como sketch para abrir en el Arduino IDE
-- `protolink-X.Y.Z-<tu sistema>` — librería, bindings y ejemplos
+- `protolink-device-sdk-uno-X.Y.Z.zip` — el SDK del UNO. Trae el **ejemplo ya compilado** (`firmware/protolink_example_uno.hex`),
+  la librería `ProtolinkDevice` ya compilada y el mismo ejemplo como sketch para el Arduino IDE.
+- `protolink-X.Y.Z-<tu sistema>` — librería, bindings y ejemplos del PC.
 
 ## 2. Grabar
 
-**Con el Arduino IDE** (lo más fácil): descomprime `protolink_uno_sketch.zip`, abre
-`protolink_uno/protolink_uno.ino`, elige *Herramientas → Placa → Arduino UNO* y el puerto, y pulsa *Subir*.
-
-**Con `avrdude`** (viene con el IDE; en Linux `sudo apt install avrdude`):
+**Con `avrdude`** (viene con el IDE; en Linux `sudo apt install avrdude`), con el `.hex` del SDK:
 
 ```bash
-avrdude -p atmega328p -c arduino -P /dev/ttyACM0 -b 115200 -U flash:w:protolink_fw_uno.hex:i   # Linux
-avrdude -p atmega328p -c arduino -P COM5 -b 115200 -U flash:w:protolink_fw_uno.hex:i            # Windows
-avrdude -p atmega328p -c arduino -P /dev/cu.usbmodem1101 -b 115200 -U flash:w:protolink_fw_uno.hex:i  # macOS
+avrdude -p atmega328p -c arduino -P /dev/ttyACM0 -b 115200 -U flash:w:firmware/protolink_example_uno.hex:i   # Linux
+avrdude -p atmega328p -c arduino -P COM5 -b 115200 -U flash:w:firmware/protolink_example_uno.hex:i            # Windows
+avrdude -p atmega328p -c arduino -P /dev/cu.usbmodem1101 -b 115200 -U flash:w:firmware/protolink_example_uno.hex:i  # macOS
 ```
 
 (clones con CH340: el puerto es `/dev/ttyUSB0` o `COMx`; si falla, prueba `-b 57600` por si lleva el bootloader antiguo.)
+
+**Con el Arduino IDE:** copia la carpeta `library/ProtolinkDevice` del SDK a la carpeta `libraries` de tu sketchbook, abre
+`example/ProtolinkExample/ProtolinkExample.ino`, elige *Herramientas → Placa → Arduino UNO* y el puerto, y pulsa *Subir*.
 
 ## 3. Probar
 
@@ -84,5 +78,5 @@ C/C++: `pl_open(port, PL_UNO_BAUD)`; MATLAB: `protolink.Link("COM5", 500000)` y 
   (pero entonces no podrás volver a subir sketches sin quitarlo).
 - **Simulink**: el bloque es el mismo; usa un puerto abierto a 500000 baudios y una frecuencia ≤ 500 Hz
   (con la máscara, la espera de 2,5 s tras el reset aún no está automatizada).
-- **Tu código**: sustituye `pl_app_process` en `firmware/common/app.c` (ahora es un eco). Con 2 KB de RAM y sin
+- **Tu código**: sustituye `pl_app_process` en `app.c` del sketch de ejemplo (ahora es un filtro paso bajo). Con 2 KB de RAM y sin
   FPU, cada trama deja ~2 ms de CPU a 500 Hz; cálculos pesados en `float` bajan la frecuencia alcanzable.

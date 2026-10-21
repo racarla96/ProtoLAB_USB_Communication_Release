@@ -18,7 +18,7 @@ De la página [Releases](https://github.com/racarla96/ProtoLAB_USB_Communication
 
 | Fichero | Para qué |
 |---------|----------|
-| `protolink_fw.uf2` (Pico) o `protolink_fw_pico2.uf2` (Pico 2) | firmware de la placa |
+| `protolink-device-sdk-pico-X.Y.Z.zip` (Pico) o `protolink-device-sdk-pico2-X.Y.Z.zip` (Pico 2) | el SDK de la placa; dentro, `firmware/protolink_example_pico.uf2` (o `_pico2.uf2`) es el firmware ya compilado para grabar |
 | `protolink-X.Y.Z-macos-universal.tar.gz` | librería C/C++, bindings, ejemplos |
 | `protolink-X.Y.Z-py3-none-macosx_11_0_universal2.whl` | paquete de Python |
 
@@ -40,7 +40,7 @@ pip install ../protolink-*-py3-none-macosx_11_0_universal2.whl
 1. Con la placa desconectada, mantén pulsado **BOOTSEL** y conéctala. Suelta el botón.
 2. Aparece el volumen `RPI-RP2` (Pico) o `RP2350` (Pico 2). Arrastra el `.uf2` en el Finder, o:
    ```bash
-   cp protolink_fw.uf2 /Volumes/RPI-RP2/
+   cp firmware/protolink_example_pico.uf2 /Volumes/RPI-RP2/
    ```
 3. La placa se reinicia sola. macOS puede avisar de *"Disco no expulsado correctamente"*: es normal.
 

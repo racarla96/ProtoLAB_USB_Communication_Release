@@ -24,7 +24,7 @@ El protocolo, la frecuencia (1–1000 Hz con `start`) y la API son los mismos.
 
 De la página [Releases](https://github.com/racarla96/ProtoLAB_USB_Communication_Release/releases/latest):
 
-- `protolink_fw_esp32.bin` — imagen completa, se graba en la dirección `0x0`
+- `protolink-device-sdk-esp32-X.Y.Z.zip` — el SDK del ESP32; dentro, `firmware/protolink_example_esp32.bin` es la imagen completa del ejemplo, que se graba en la dirección `0x0`
 - `protolink-X.Y.Z-windows-x64.zip` — librería, bindings y ejemplos para Windows x64
 
 ## 2. Driver y puerto COM
@@ -42,7 +42,7 @@ Si no aparece ningún puerto nuevo: prueba otro cable (muchos son solo de carga)
 Con **Chrome o Edge**, abre <https://espressif.github.io/esptool-js/>:
 
 1. **Connect** → elige el COM de la placa.
-2. En *Flash Address* pon **`0x0`** y elige `protolink_fw_esp32.bin`.
+2. En *Flash Address* pon **`0x0`** y elige `firmware/protolink_example_esp32.bin`.
 3. **Program**. Al terminar, pulsa el botón **EN/RST** de la placa (o desconéctala y vuelve a conectarla).
 
 Si no consigue conectar: mantén pulsado **BOOT**, pulsa y suelta **EN**, suelta **BOOT** y repite *Connect*.
@@ -51,7 +51,7 @@ Si no consigue conectar: mantén pulsado **BOOT**, pulsa y suelta **EN**, suelta
 
 ```powershell
 py -m pip install esptool
-py -m esptool --chip esp32 --port COM7 write_flash 0x0 protolink_fw_esp32.bin
+py -m esptool --chip esp32 --port COM7 write_flash 0x0 firmware/protolink_example_esp32.bin
 ```
 </details>
 
@@ -84,8 +84,8 @@ with protolink.Link("COM7", baud=protolink.ESP32_BAUD, dtr_rts=False) as link:
 - **MATLAB**: `link = protolink.Link("COM7", 921600, false);`
 - **Simulink** (`sfun_protolink`): los parámetros 7 y 8 (obligatorios) son velocidad y DTR/RTS: `'COM7', 500, 1/500, 1, 100, 1, 921600, 0`, o `protolink_demo('COM7', 500, 10, true)`.
 
-El código de tu modelo va en `firmware/common/app.c` (`pl_app_process`), el mismo fichero para Pico y
-ESP32. Para compilar tú el firmware: ESP-IDF 5.x y `firmware/esp32/build.sh`.
+El código de tu modelo va en `main/app.c` del proyecto `example/` del SDK (`pl_app_process`). Para compilarlo tú:
+ESP-IDF 5.x (ver `README.md` del SDK y `docs/DeviceSDK.md`).
 
 ## Problemas frecuentes
 

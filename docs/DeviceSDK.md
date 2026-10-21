@@ -8,6 +8,7 @@ por placa en cada release, con la lógica del enlace **ya compilada** (sin códi
 | `protolink-device-sdk-pico-X.Y.Z.zip` | Raspberry Pi Pico (RP2040) |
 | `protolink-device-sdk-pico2-X.Y.Z.zip` | Raspberry Pi Pico 2 (RP2350) |
 | `protolink-device-sdk-esp32-X.Y.Z.zip` | ESP32 (WROOM / WROVER) |
+| `protolink-device-sdk-uno-X.Y.Z.zip` | Arduino UNO (ATmega328P) |
 
 ```
 protolink-device-sdk-<placa>-X.Y.Z/
@@ -17,6 +18,11 @@ protolink-device-sdk-<placa>-X.Y.Z/
   example/                            el MISMO ejemplo como proyecto, para compilarlo y usarlo de base
   README.md                           los pasos de esta placa
 ```
+
+El del **Arduino UNO** tiene otra forma, porque Arduino trabaja con librerías: en vez de `include/` y `lib/`, trae
+`library/ProtolinkDevice/` (librería de Arduino ya compilada, que copias a la carpeta `libraries` de tu sketchbook) y el
+ejemplo es un sketch (`example/ProtolinkExample/`, con tu código en `app.c`); el ejemplo compilado es un `.hex`.
+(El LGT8F328P no tiene device SDK: su núcleo de Arduino no admite librerías precompiladas.)
 
 **Pruébalo sin compilar nada:** graba el fichero de `firmware/` y conecta desde el PC (Python, C++, MATLAB o
 Simulink, o `examples/hw_check.py` de la release de la librería). **Y cuando quieras tu código:** copia `example/`,
@@ -75,6 +81,20 @@ El ejemplo ya compilado (`firmware/protolink_example_esp32.bin`) es una imagen �
 `esptool --chip esp32 --port <puerto> write-flash 0x0 firmware/protolink_example_esp32.bin`.
 En el PC, abre el puerto a 921600 baudios sin tocar DTR/RTS (`--board esp32` en los ejemplos).
 No pongas `CONFIG_ESP_CONSOLE_NONE` en tu `sdkconfig`: la placa dejaría de transmitir.
+
+## Arduino UNO
+
+```bash
+# Arduino IDE: copia library/ProtolinkDevice a la carpeta "libraries" de tu sketchbook y abre
+# example/ProtolinkExample/ProtolinkExample.ino (placa Arduino UNO).  O, con arduino-cli:
+arduino-cli compile --fqbn arduino:avr:uno --library protolink-device-sdk-uno-X.Y.Z/library/ProtolinkDevice \
+    protolink-device-sdk-uno-X.Y.Z/example/ProtolinkExample
+```
+El ejemplo ya compilado (`firmware/protolink_example_uno.hex`) se graba con
+`avrdude -p atmega328p -c arduino -P <puerto> -b 115200 -U flash:w:firmware/protolink_example_uno.hex:i`.
+Con 2 KB de RAM el máximo es 16 canales por sentido (`PROTOLINK_MAX_CHANNELS`), y el enlace va por UART a 500000
+baudios, hasta 500 Hz. En el PC abre el puerto a esa velocidad y espera ~2 s tras abrirlo, que resetea la placa
+(`Link(puerto, baud=protolink.UNO_BAUD)` o `baud="auto", boot=2.5`).
 
 ## Desde el PC no cambia nada
 

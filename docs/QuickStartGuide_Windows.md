@@ -18,7 +18,7 @@ De la página [Releases](https://github.com/racarla96/ProtoLAB_USB_Communication
 
 | Fichero | Para qué |
 |---------|----------|
-| `protolink_fw.uf2` (Pico) o `protolink_fw_pico2.uf2` (Pico 2) | firmware de la placa |
+| `protolink-device-sdk-pico-X.Y.Z.zip` (Pico) o `protolink-device-sdk-pico2-X.Y.Z.zip` (Pico 2) | el SDK de la placa; dentro, `firmware/protolink_example_pico.uf2` (o `_pico2.uf2`) es el firmware ya compilado para grabar |
 | `protolink-X.Y.Z-windows-x64.zip` | librería C/C++, bindings, ejemplos |
 | `protolink-X.Y.Z-py3-none-win_amd64.whl` | paquete de Python |
 

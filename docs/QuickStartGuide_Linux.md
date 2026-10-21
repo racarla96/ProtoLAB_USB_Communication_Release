@@ -16,7 +16,7 @@ De la página [Releases](https://github.com/racarla96/ProtoLAB_USB_Communication
 
 | Fichero | Para qué |
 |---------|----------|
-| `protolink_fw.uf2` (Pico) o `protolink_fw_pico2.uf2` (Pico 2) | firmware de la placa |
+| `protolink-device-sdk-pico-X.Y.Z.zip` (Pico) o `protolink-device-sdk-pico2-X.Y.Z.zip` (Pico 2) | el SDK de la placa; dentro, `firmware/protolink_example_pico.uf2` (o `_pico2.uf2`) es el firmware ya compilado para grabar |
 | `protolink-X.Y.Z-linux-x86_64.tar.gz` | librería C/C++, bindings, ejemplos |
 | `protolink-X.Y.Z-py3-none-manylinux…_x86_64.whl` | paquete de Python |
 
@@ -35,7 +35,7 @@ pip install ../protolink-*-py3-none-manylinux*_x86_64.whl
 1. Con la placa desconectada, mantén pulsado **BOOTSEL** y conéctala. Suelta el botón.
 2. Aparece una unidad `RPI-RP2` (Pico) o `RP2350` (Pico 2). Copia el `.uf2`:
    ```bash
-   cp protolink_fw.uf2 /media/$USER/RPI-RP2/
+   cp firmware/protolink_example_pico.uf2 /media/$USER/RPI-RP2/
    ```
 3. La placa se reinicia sola y aparece como puerto serie:
    ```bash

@@ -25,7 +25,8 @@ desde el PC vuelve suavizado y comprueba que todo funciona. Para ejecutar tu pro
 | Raspberry Pi Pico | Mantén BOOTSEL al enchufar y arrastra `firmware/protolink_example_pico.uf2` (del SDK de la Pico) a la unidad `RPI-RP2` |
 | Raspberry Pi Pico 2 | Igual, con `firmware/protolink_example_pico2.uf2` (del SDK de la Pico 2) |
 | ESP32 (WROOM) | `esptool --chip esp32 --port <puerto> write-flash 0x0 firmware/protolink_example_esp32.bin` (del SDK del ESP32) |
-| Arduino UNO / LGT8F328P | Aún no tienen device SDK (ver «Qué hay en cada release») |
+| Arduino UNO | `avrdude -p atmega328p -c arduino -P <puerto> -b 115200 -U flash:w:firmware/protolink_example_uno.hex:i` (del SDK del UNO), o el sketch del SDK en el Arduino IDE |
+| LGT8F328P | Sin device SDK por ahora (su núcleo de Arduino no admite librerías precompiladas) |
 
 **3. Comprueba el enlace** (puerto: `/dev/ttyACM0` en Linux, `COM5` en Windows, `/dev/cu.usbmodem…` en macOS):
 
@@ -100,7 +101,7 @@ modelo debe ser `1/Rate`. Prueba rápida: `protolink_demo`.
 
 ## Tu código en la placa (device SDK)
 
-Hay un device SDK **por placa** (`protolink-device-sdk-pico-X.Y.Z.zip`, `-pico2-` y `-esp32-`). Trae la lógica del enlace
+Hay un device SDK **por placa** (`protolink-device-sdk-pico-X.Y.Z.zip`, `-pico2-`, `-esp32-` y `-uno-`). Trae la lógica del enlace
 **ya compilada para esa placa** (una librería, sin código fuente), el **ejemplo ya compilado y listo para grabar**, y
 **ese mismo ejemplo como proyecto** para que lo compiles y lo uses de base. Solo escribes tu modelo, controlador o
 lectura de sensores, y cuántos canales usa tu placa en cada sentido:
@@ -177,7 +178,7 @@ en el PC contra una placa simulada, pero esas placas no se han probado todavía.
 | `protolink-X.Y.Z-linux-x86_64.tar.gz`, `-macos-universal.tar.gz`, `-windows-x64.zip` | Librería (C/C++), bindings de C++, Python, MATLAB y Simulink, ejemplos (los de C y C++ compilados) y guías |
 | `protolink-X.Y.Z-py3-none-<plataforma>.whl` | Paquete de Python (`pip install` y listo) |
 | `protolink-matlab-X.Y.Z-<sistema>-<release de MATLAB>.zip` | **MATLAB + Simulink listos**: bloque ya compilado, librería con máscara de desplegables, `Link.m`. Descomprimir y ejecutar `protolink_setup` |
-| `protolink-device-sdk-pico-X.Y.Z.zip`, `-pico2-`, `-esp32-` | **Tu código en la placa**: la librería del enlace compilada para esa placa, el ejemplo ya compilado (`.uf2` / `.bin`) y el mismo ejemplo como proyecto |
+| `protolink-device-sdk-pico-X.Y.Z.zip`, `-pico2-`, `-esp32-`, `-uno-` | **Tu código en la placa**: la librería del enlace compilada para esa placa, el ejemplo ya compilado (`.uf2` / `.bin` / `.hex`) y el mismo ejemplo como proyecto (en el UNO, una librería de Arduino y un sketch) |
 | `SHA256SUMS.txt` | Comprobación de integridad (`sha256sum -c SHA256SUMS.txt`) |
 
 **Paquetes de MATLAB:** `glnxa64` (Linux), `maca64` (macOS con Apple Silicon) y `win64` (Windows), compilados con
@@ -185,9 +186,9 @@ en el PC contra una placa simulada, pero esas placas no se han probado todavía.
 procesador Intel. Con una versión anterior a R2024b, o en un Mac Intel, ejecuta `protolink_setup('rebuild')`
 (necesita un compilador de C: `mex -setup C`).
 
-**Todavía no incluido:** el device SDK y el firmware de ejemplo de **Arduino UNO y LGT8F328P**, que se publicarán
-cuando se prueben en hardware. Tampoco se han probado todavía en una placa real los ejemplos de Pico 2 y de las
-demás placas (ver «Placas y sistemas probados»).
+**No incluido:** el device SDK del **LGT8F328P**, porque su núcleo de Arduino (`lgt8fx`) no admite librerías
+precompiladas. En el PC funciona igual que el UNO (1000000 baudios, hasta 1000 Hz). Los ejemplos de los SDK están
+compilados, pero **ninguno se ha probado todavía en una placa real** (ver «Placas y sistemas probados»).
 
 ## Licencia
 
