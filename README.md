@@ -16,16 +16,16 @@ C/C++, MATLAB o Simulink**, con el código del modelo ejecutándose en la placa 
 el archivo de tu sistema: `protolink-X.Y.Z-linux-x86_64.tar.gz`, `-macos-universal.tar.gz` o `-windows-x64.zip`.
 Descomprímelo: trae la librería, los ejemplos (los de C y C++ ya compilados) y las guías.
 
-**2. Graba el firmware de pruebas en la placa.** Los firmwares de pruebas (`protolink_fw.uf2`,
-`protolink_fw_esp32.bin`, los `.hex` de Arduino) devuelven al PC lo que reciben (eco) para comprobar que todo
-funciona. **Esta versión todavía no los incluye** (ver «Qué hay en cada release»): se están preparando junto con
-el device SDK, y se publicarán ya compilados, listos para grabar. Los comandos de la tabla son los de entonces.
+**2. Graba el firmware de ejemplo en la placa.** Cada *device SDK* (`protolink-device-sdk-<placa>-X.Y.Z.zip`, uno
+por placa) trae en `firmware/` un ejemplo **ya compilado, listo para grabar**: filtra cada canal, así que lo que envíes
+desde el PC vuelve suavizado y comprueba que todo funciona. Para ejecutar tu propio código en la placa, ve al paso 5.
 
 | Placa | Cómo se graba |
 |-------|---------------|
-| Raspberry Pi Pico / Pico 2 | Mantén BOOTSEL al enchufar y arrastra `protolink_fw.uf2` a la unidad `RPI-RP2` |
-| ESP32 (WROOM) | `esptool --chip esp32 --port <puerto> write-flash 0x0 protolink_fw_esp32.bin` |
-| Arduino UNO / LGT8F328P | `avrdude -p atmega328p -c arduino -P <puerto> -b 115200 -U flash:w:protolink_fw_uno.hex:i` (o el sketch en el Arduino IDE) |
+| Raspberry Pi Pico | Mantén BOOTSEL al enchufar y arrastra `firmware/protolink_example_pico.uf2` (del SDK de la Pico) a la unidad `RPI-RP2` |
+| Raspberry Pi Pico 2 | Igual, con `firmware/protolink_example_pico2.uf2` (del SDK de la Pico 2) |
+| ESP32 (WROOM) | `esptool --chip esp32 --port <puerto> write-flash 0x0 firmware/protolink_example_esp32.bin` (del SDK del ESP32) |
+| Arduino UNO / LGT8F328P | Aún no tienen device SDK (ver «Qué hay en cada release») |
 
 **3. Comprueba el enlace** (puerto: `/dev/ttyACM0` en Linux, `COM5` en Windows, `/dev/cu.usbmodem…` en macOS):
 
@@ -38,8 +38,8 @@ Los ejemplos de C y C++ también se ejecutan directamente: `examples/bin/example
 
 **4. Úsalo desde tu lenguaje** (más abajo, «Uso»).
 
-**5. Pon tu propio código en la placa** con el [device SDK](docs/DeviceSDK.md): escribes una función,
-`pl_app_process(in, n_in, out, n_out)`, y la plantilla de la Pico o del ESP32 la ejecuta en cada trama.
+**5. Pon tu propio código en la placa** con el [device SDK](docs/DeviceSDK.md) de tu placa: escribes una función,
+`pl_app_process(in, n_in, out, n_out)`, y el proyecto de ejemplo (`example/`) la ejecuta en cada trama.
 
 ## Uso
 
@@ -100,8 +100,10 @@ modelo debe ser `1/Rate`. Prueba rápida: `protolink_demo`.
 
 ## Tu código en la placa (device SDK)
 
-`protolink-device-sdk.zip` trae las plantillas de **Raspberry Pi Pico / Pico 2** y **ESP32** con la lógica del
-enlace ya compilada. Solo escribes tu modelo, controlador o lectura de sensores, y cuántos canales usa tu placa en cada sentido:
+Hay un device SDK **por placa** (`protolink-device-sdk-pico-X.Y.Z.zip`, `-pico2-` y `-esp32-`). Trae la lógica del enlace
+**ya compilada para esa placa** (una librería, sin código fuente), el **ejemplo ya compilado y listo para grabar**, y
+**ese mismo ejemplo como proyecto** para que lo compiles y lo uses de base. Solo escribes tu modelo, controlador o
+lectura de sensores, y cuántos canales usa tu placa en cada sentido:
 
 ```c
 void pl_app_process(const float *in, int n_in, float *out, int n_out) { /* in: lo que manda el PC, out: lo que devuelves */ }
@@ -175,6 +177,7 @@ en el PC contra una placa simulada, pero esas placas no se han probado todavía.
 | `protolink-X.Y.Z-linux-x86_64.tar.gz`, `-macos-universal.tar.gz`, `-windows-x64.zip` | Librería (C/C++), bindings de C++, Python, MATLAB y Simulink, ejemplos (los de C y C++ compilados) y guías |
 | `protolink-X.Y.Z-py3-none-<plataforma>.whl` | Paquete de Python (`pip install` y listo) |
 | `protolink-matlab-X.Y.Z-<sistema>-<release de MATLAB>.zip` | **MATLAB + Simulink listos**: bloque ya compilado, librería con máscara de desplegables, `Link.m`. Descomprimir y ejecutar `protolink_setup` |
+| `protolink-device-sdk-pico-X.Y.Z.zip`, `-pico2-`, `-esp32-` | **Tu código en la placa**: la librería del enlace compilada para esa placa, el ejemplo ya compilado (`.uf2` / `.bin`) y el mismo ejemplo como proyecto |
 | `SHA256SUMS.txt` | Comprobación de integridad (`sha256sum -c SHA256SUMS.txt`) |
 
 **Paquetes de MATLAB:** `glnxa64` (Linux), `maca64` (macOS con Apple Silicon) y `win64` (Windows), compilados con
@@ -182,10 +185,9 @@ en el PC contra una placa simulada, pero esas placas no se han probado todavía.
 procesador Intel. Con una versión anterior a R2024b, o en un Mac Intel, ejecuta `protolink_setup('rebuild')`
 (necesita un compilador de C: `mex -setup C`).
 
-**Todavía no incluido en esta versión** (en preparación): el *device SDK* (`protolink-device-sdk.zip`: tu código en la
-placa, con la librería ya compilada para cada placa y un ejemplo listo para grabar) y los firmwares de pruebas
-(`protolink_fw.uf2`, `protolink_fw_esp32.bin`, los `.hex` de Arduino). Pico 2, Arduino UNO y LGT8F328P se publicarán
-cuando se prueben en hardware.
+**Todavía no incluido:** el device SDK y el firmware de ejemplo de **Arduino UNO y LGT8F328P**, que se publicarán
+cuando se prueben en hardware. Tampoco se han probado todavía en una placa real los ejemplos de Pico 2 y de las
+demás placas (ver «Placas y sistemas probados»).
 
 ## Licencia
 
